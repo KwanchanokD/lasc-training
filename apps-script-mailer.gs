@@ -36,12 +36,12 @@ const SENDER_NAME = 'ศูนย์บริการสัตว์ทดล�
 /* อีเมลที่ให้ผู้เรียนกดตอบกลับ (เว้นว่าง = ตอบกลับบัญชีที่รันสคริปต์) */
 const LAB_REPLY_TO = 'psu.labanimals@gmail.com';
 
-/* ที่อยู่เว็บของระบบอบรม — ใส่เป็นลิงก์ในอีเมล (เช่น https://kwanchanokd.github.io/psu-lasc-training/) */
-const APP_URL = '';
+/* ที่อยู่เว็บของระบบอบรม — ใส่เป็นลิงก์ในอีเมล */
+const APP_URL = 'https://kwanchanokd.github.io/lasc-training/';
 
 /* ค่าจาก Firebase config ของระบบอบรม (databaseURL และ projectId) */
-const DB_URL = 'https://<project-id>-default-rtdb.asia-southeast1.firebasedatabase.app';
-const FIREBASE_PROJECT = '<project-id>';
+const DB_URL = 'https://psu-lasc-training-default-rtdb.asia-southeast1.firebasedatabase.app';
+const FIREBASE_PROJECT = 'psu-lasc-training';
 
 /* กันการยิงถี่ผิดปกติ: จำนวนการลงทะเบียนที่ส่งอีเมลได้สูงสุดต่อชั่วโมง */
 const MAX_PER_HOUR = 60;
