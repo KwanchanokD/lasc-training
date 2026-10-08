@@ -1,0 +1,112 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "allowed": {
+      ".read": "auth != null && root.child('allowed').child(auth.uid).val() === 'admin'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && root.child('allowed').child(auth.uid).val() === 'admin' && auth.uid !== $uid",
+        ".validate": "newData.val() === 'admin' || newData.val() === 'staff'"
+      }
+    },
+
+    "data": {
+      "training": {
+
+        "courses": {
+          ".read": true,
+          ".write": "auth != null && root.child('allowed').child(auth.uid).exists()"
+        },
+
+        "settings": {
+          ".read": true,
+          ".write": "auth != null && root.child('allowed').child(auth.uid).val() === 'admin'"
+        },
+
+        "sessions": {
+          ".read": true,
+          "$sid": {
+            ".write": "auth != null && root.child('allowed').child(auth.uid).exists()",
+            "seats": {
+              "$uid": {
+                ".write": "auth != null && auth.uid === $uid",
+                ".validate": "newData.isString()"
+              }
+            }
+          }
+        },
+
+        "counters": {
+          "$k": {
+            ".read": "auth != null",
+            ".write": "auth != null && newData.isNumber() && newData.val() === (data.exists() ? data.val() : 0) + 1"
+          }
+        },
+
+        "certs": {
+          ".read": "auth != null && root.child('allowed').child(auth.uid).exists()",
+          "$no": {
+            ".read": true,
+            ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && !data.exists() && newData.child('uid').val() === auth.uid && newData.child('type').val() === 'mooc' && newData.parent().parent().child('enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/cert/no').val() === $no && !root.child('data/training/enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/cert').exists() && newData.child('courseId').val() === root.child('data/training/enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/info/courseId').val() && newData.child('courseTitle').val() === root.child('data/training/enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/info/courseTitle').val() && newData.child('name').val() === root.child('data/training/enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/info/prefix').val() + root.child('data/training/enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/info/firstName').val() + ' ' + root.child('data/training/enrollments/' + auth.uid + '/' + newData.child('eid').val() + '/info/lastName').val())"
+          }
+        },
+
+        "enrollments": {
+          ".read": "auth != null && root.child('allowed').child(auth.uid).exists()",
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            "$eid": {
+              "info": {
+                ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid && !data.exists() && newData.child('email').val() === auth.token.email)"
+              },
+              "mail": {
+                ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid)"
+              },
+              "pay": {
+                ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid && (!data.exists() ? (newData.child('status').val() === (newData.child('amount').val() > 0 ? 'unpaid' : 'none') && newData.child('amount').val() === root.child('data/training/courses/' + newData.parent().child('info/courseId').val() + '/' + (newData.parent().child('info/applicantType').val() === 'psu' ? 'feeInternal' : 'feeExternal')).val()) : ((data.child('status').val() === 'unpaid' || data.child('status').val() === 'rejected' || data.child('status').val() === 'submitted') && newData.child('status').val() === 'submitted' && newData.child('amount').val() === data.child('amount').val())))"
+              },
+              "progress": {
+                ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid)"
+              },
+              "att": {
+                ".write": "auth != null && root.child('allowed').child(auth.uid).exists()"
+              },
+              "result": {
+                ".write": "auth != null && root.child('allowed').child(auth.uid).exists()"
+              },
+              "staffNote": {
+                ".write": "auth != null && root.child('allowed').child(auth.uid).exists()"
+              },
+              "cert": {
+                ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid && !data.exists() && data.parent().child('info/type').val() === 'mooc' && !data.parent().child('cancel').exists() && root.child('data/training/settings/moocAutoCert').val() !== false && (data.parent().child('pay/status').val() === 'none' || data.parent().child('pay/status').val() === 'paid' || data.parent().child('pay/status').val() === 'waived') && data.parent().child('progress/best').val() >= root.child('data/training/courses/' + data.parent().child('info/courseId').val() + '/passScore').val())"
+              },
+              "cancel": {
+                ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid && !data.exists() && !data.parent().child('att').exists() && !data.parent().child('result').exists() && !data.parent().child('cert').exists())"
+              }
+            }
+          }
+        },
+
+        "slips": {
+          "$uid": {
+            "$eid": {
+              ".read": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid)",
+              ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid)",
+              ".validate": "newData.child('img').isString() && newData.child('img').val().length < 1500000"
+            }
+          }
+        },
+
+        "profiles": {
+          ".read": "auth != null && root.child('allowed').child(auth.uid).exists()",
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "(auth != null && root.child('allowed').child(auth.uid).exists()) || (auth != null && auth.uid === $uid)"
+          }
+        }
+      }
+    }
+  }
+}
